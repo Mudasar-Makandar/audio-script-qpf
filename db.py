@@ -34,7 +34,7 @@ class QfpDB:
     querying the database with query fingerprints
     """
 
-    def __init__(self, db_path='qfp.db'):
+    def __init__(self, db_path='audio_database.db'):
         self.path = db_path
         with sqlite3.connect(self.path) as conn:
             self._create_tables(conn)
