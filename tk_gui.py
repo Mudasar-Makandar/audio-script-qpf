@@ -4,8 +4,9 @@ from tkinter import *
 from tkinter import filedialog
 from fingerprint import ReferenceFingerprint, QueryFingerprint
 from db import *
-from tkinter import messagebox
+from tkinter import messagebox, Listbox
 import os
+import collections
 
 root = Tk()
 #root.filename = filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
@@ -37,6 +38,38 @@ def UploadDirectory(event=None):
             pass
     messagebox.showinfo(title="Status", message="Succesfully Stored!")
 
+
+def QueryFile(event=None):
+    try:
+        root.filename = filedialog.askopenfilename(initialdir = "/",title = "Select file")
+        fp_q = QueryFingerprint(root.filename)
+        fp_q.create1()
+        db = QfpDB(db_path="qfp.db")
+        db.query(fp_q)
+        if fp_q.matches != []:
+            Match = collections.namedtuple("Match", ["record","offset","vScore"])
+            #print(fp_q.matches)
+            result = fp_q.matches
+            #print(result)
+            records_matched = []
+            for e in range(len(result)):
+                records_matched.append(result[e].record)
+            #print(records_matched)
+            master = Tk()
+            list = Listbox(master)
+            list.insert(0, *records_matched)
+            list.pack()
+            btn = Button(master,text='Quit', width=25, command=master.destroy)
+            btn.pack()
+            btn.place(anchor=NW,height=40,width=80, rely=0.8, relx=0.2)
+            master.mainloop()
+
+        else:
+            messagebox.showinfo(title="Status", message="Sorry!, There is no matching")
+
+    except:
+        messagebox.showwarning(title="Status", message="Something went wrong!")
+
 root.geometry("800x300")
 button = Button(root,text='File', width=25, command=UploadFile)
 button.pack()
@@ -56,7 +89,7 @@ text2.pack()
 text2.insert(tkinter.END, "Select a File to Query \n within DataBase")
 text2.place(anchor=SW,height=40,width=200, rely=0.3, relx=0.65)
 
-button2 = Button(root,text='Query', width=25, command=root.destroy)
+button2 = Button(root,text='Query', width=25, command=QueryFile)
 button2.pack()
 button2.place(anchor=NW,height=40,width=80, rely=0.35, relx=0.72)
 
