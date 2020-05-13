@@ -7,6 +7,7 @@ from db import *
 from tkinter import messagebox, Listbox
 import os
 import collections
+import sqlite3
 
 root = Tk()
 #root.filename = filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
@@ -44,7 +45,7 @@ def QueryFile(event=None):
         root.filename = filedialog.askopenfilename(initialdir = "/",title = "Select file")
         fp_q = QueryFingerprint(root.filename)
         fp_q.create1()
-        db = QfpDB(db_path="qfp.db")
+        db = QfpDB(db_path="audio_database.db")
         db.query(fp_q)
         if fp_q.matches != []:
             Match = collections.namedtuple("Match", ["record","offset","vScore"])
@@ -69,6 +70,31 @@ def QueryFile(event=None):
 
     except:
         messagebox.showwarning(title="Status", message="Something went wrong!")
+
+
+
+def database(event=None):
+    db = sqlite3.connect("qfp.db")
+    c = db.cursor()
+    c.execute("""SELECT * FROM Records""")
+    window = Tk()
+    list = Listbox(window,background='lightgray',selectmode=EXTENDED)
+    list.insert(0, *c.fetchall())
+    list.pack()
+
+    def show():
+        list1 = Listbox(window)
+        items = list.curselection()
+        list1.insert(0, *items)
+        list1.pack()
+    b1 = Button(window, text="Show", command=show)
+    b1.pack()
+    b = Button(window, text="Delete",
+           command=lambda list=list: list.delete(ANCHOR))
+    b.pack()
+    db.commit()
+    c.close()
+    window.mainloop()
 
 root.geometry("800x300")
 button = Button(root,text='File', width=25, command=UploadFile)
@@ -96,5 +122,9 @@ button2.place(anchor=NW,height=40,width=80, rely=0.35, relx=0.72)
 button3 = Button(root,text='Quit', width=25, command=root.destroy)
 button3.pack()
 button3.place(anchor=NW,height=40,width=80, rely=0.8, relx=0.5)
+
+button4 = Button(root,text='Database', width=25, command=database)
+button4.pack()
+button4.place(anchor=NW,height=40,width=80, rely=0.8, relx=0.2)
 
 root.mainloop()
