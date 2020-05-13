@@ -69,29 +69,49 @@ def QueryFile(event=None):
             messagebox.showinfo(title="Status", message="Sorry!, There is no matching")
 
     except:
-        messagebox.showwarning(title="Status", message="Something went wrong!")
+        messagebox.showwarning(title="Status", message="Sorry!, There is no matching")
 
 
 
 def database(event=None):
-    db = sqlite3.connect("qfp.db")
+    db = sqlite3.connect("audio_database.db")
     c = db.cursor()
     c.execute("""SELECT * FROM Records""")
     window = Tk()
-    list = Listbox(window,background='lightgray',selectmode=EXTENDED)
-    list.insert(0, *c.fetchall())
-    list.pack()
+    list2 = Listbox(window,background='lightgray',selectmode=EXTENDED)
+    list2.insert(0, *c.fetchall())
+    list2.pack()
+
+    def database_show(event=None):
+        db = sqlite3.connect("audio_database.db")
+        c = db.cursor()
+        c.execute("""SELECT * FROM Records""")
+        #window = Tk()
+        #list2 = Listbox(window,background='lightgray',selectmode=EXTENDED)
+        list2.delete(0,tkinter.END)
+        list2.insert(0, *c.fetchall())
+        list2.pack()
+
+    def delete():
+        db = sqlite3.connect("audio_database.db")
+        c = db.cursor()
+        items = list2.get(list2.curselection())
+        c.execute("""DELETE FROM Records WHERE id = ?""",(items[0],))
+        db.commit()
+        c.close()
 
     def show():
         list1 = Listbox(window)
-        items = list.curselection()
-        list1.insert(0, *items)
+        items = list2.get(list2.curselection())
+        list1.insert(0, items[0])
         list1.pack()
-    b1 = Button(window, text="Show", command=show)
-    b1.pack()
+
+
     b = Button(window, text="Delete",
-           command=lambda list=list: list.delete(ANCHOR))
+           command=lambda:[lambda list2=list2: list2.delete(tkinter.ANCHOR), delete(), database_show()])
     b.pack()
+    b1 = Button(window, text="Quit", command=window.destroy)
+    b1.pack()
     db.commit()
     c.close()
     window.mainloop()
