@@ -4,7 +4,7 @@ from tkinter import *
 from tkinter import filedialog
 from fingerprint import ReferenceFingerprint, QueryFingerprint
 from db import *
-from tkinter import messagebox, Listbox
+from tkinter import messagebox, Listbox, END, INSERT
 import os
 import collections
 import sqlite3
@@ -127,12 +127,12 @@ button1.place(anchor=NW,height=40,width=80, rely=0.35, relx=0.3)
 
 text1 = Text(root, width=25, height=2, background='lightgray')
 text1.pack()
-text1.insert(tkinter.END, "Select File or Directory for Fingerprint")
+text1.insert(END, "Select File or Directory for Fingerprint")
 text1.place(anchor=SW,height=40,width=200, rely=0.3, relx=0.15)
 
 text2 = Text(root, width=25, height=2, background='lightgray')
 text2.pack()
-text2.insert(tkinter.END, "Select a File to Query \n within DataBase")
+text2.insert(END, "Select a File to Query \n within DataBase")
 text2.place(anchor=SW,height=40,width=200, rely=0.3, relx=0.65)
 
 button2 = Button(root,text='Query', width=25, command=QueryFile)
